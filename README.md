@@ -1,39 +1,54 @@
 # Restaurant POS MVP
 
-An offline-first restaurant point-of-sale system for quick-service and small table-service restaurants.
+An offline-first restaurant point-of-sale system for quick-service and small table-service restaurants, delivered as one standalone Android application.
 
 ## Primary MVP goal
 
 A waiter can open a table order, add products and modifiers, send new items to the kitchen, and a cashier can collect payment and close the table.
 
-## Architecture
+## Product architecture
 
-The restaurant runs from a dedicated Android cashier device acting as the local server.
+The complete product is packaged in a single Android APK. The application contains the front end, back office, local server, local database, printing, and synchronization components.
 
 ```text
-Browser-enabled waiter tablets / cashier terminals / back-office devices
-                              |
-                        Local Wi-Fi
-                              |
-                     Android POS server
-                     - Embedded HTTP API
-                     - Responsive web UI
-                     - SQLite database
-                     - Kitchen print queue
-                     - Cloud sync outbox
+Standalone Android application
+|- Capacitor web frontend
+|  |- Waiter mode
+|  |- Cashier mode
+|  |- Back-office mode
+|  `- System status
+|- Java Android native layer
+|  |- Foreground service
+|  |- Embedded REST and WebSocket server
+|  |- SQLite / Room
+|  |- ESC/POS printing
+|  |- Background synchronization
+|  `- Device and network integration
+`- Local operational data
+   |- Catalog and configuration
+   |- Users and permissions
+   |- Tables and orders
+   |- Payments
+   |- Print jobs
+   `- Synchronization outbox
 ```
 
-The system remains operational when the internet is unavailable, provided the local Android server and restaurant network are available.
+The primary cashier Android device runs server mode and is the restaurant-local source of truth. The same APK can run in waiter, cashier, or administrator mode. A waiter tablet may also use the embedded local web interface if that deployment option is enabled later.
+
+The system remains operational without internet as long as the main Android device, local database, and required local network or printer connection are available.
 
 ## User roles
 
 - **Waiter:** table and order-taking only
 - **Cashier:** counter orders, payments, receipts, and order closure
-- **Administrator:** catalog, users, tables, printers, and reports
+- **Administrator:** products, categories, modifiers, users, tables, printers, reports, and system configuration
 
 ## MVP capabilities
 
-- PIN login
+- One standalone Android APK
+- Capacitor-based responsive frontend bundled in the APK
+- Offline back-office operations
+- PIN login and role-based navigation
 - Table management
 - Counter and table orders
 - Product categories
@@ -51,6 +66,8 @@ The system remains operational when the internet is unavailable, provided the lo
 
 ## Explicitly out of scope
 
+- Separate desktop or web back-office deployment
+- Separate mandatory local server or mini-PC
 - Split payments
 - Tips
 - Refunds
